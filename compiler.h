@@ -1,6 +1,5 @@
-#pragma once
-//#ifndef COMPILER_H
-//#define COMPILER_H
+#ifndef COMPILER_H
+#define COMPILER_H
 
 #include <fstream>
 #include <iostream>
@@ -47,4 +46,4 @@ class Compiler {
 
 };
 
-//#endif
+#endif
