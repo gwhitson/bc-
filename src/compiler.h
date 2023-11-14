@@ -15,7 +15,7 @@ const std::string S_END_OF_FILE = "$";
 enum storeTypes {INTEGER, BOOLEAN, PROG_NAME, CHAR};
 enum modes {VARIABLE, CONSTANT};
 enum allocation {YES, NO};
-enum tokenTypes {WHITESPACE, NKID, KEYWORD, SPCHAR, END};
+enum tokenTypes {NKID, WHITESPACE, END, KEYWORD, VAL, RPAREN, LPAREN};
 
 class SymbolTableEntry{
     public:
@@ -92,10 +92,10 @@ class Compiler {
 
         void parser();
 
-        void expression();
-        void operation();
-        void declaration();
-        void assignment();
+        void expr();
+        void oper();
+        void ret();
+        void error();
 
         
         char nextChar();
@@ -107,7 +107,7 @@ class Compiler {
         //bool isSpecialChar(std::string x);
         bool isEOF(std::string x);
         bool isEOF(char x);
-        void processError();
+        void processError(std::string err);
     private:
         std::ifstream sourceFile;
         std::ofstream listingFile;

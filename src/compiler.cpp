@@ -1,6 +1,7 @@
 // starting to build a compiler, we will see how far I take this
 
 #include "compiler.h"
+#include <cstdlib>
 
 //Constructor
 Compiler::Compiler(char **argv){
@@ -14,6 +15,7 @@ Compiler::~Compiler(){
     listingFile.close();
 }
 
+//------------- PRODUCTIONS --------------//
 void Compiler::parser(){
     lineNo++;
     nextChar();
@@ -21,19 +23,25 @@ void Compiler::parser(){
         listingFile << token.first << "-";
         switch (token.second) {
             case 0:
-                listingFile << "WHITESPACE" << std::endl;
-                break;
-            case 1:
                 listingFile << "NKID" << std::endl;
                 break;
+            case 1:
+                listingFile << "WHITESPACE" << std::endl;
+                break;
             case 2:
-                listingFile << "KEYWORD" << std::endl;
+                listingFile << "END" << std::endl;
                 break;
             case 3:
-                listingFile << "SPCHAR" << std::endl;
+                listingFile << "KEYWORD" << std::endl;
                 break;
             case 4:
-                listingFile << "END" << std::endl;
+                listingFile << "VAL" << std::endl;
+                break;
+            case 5:
+                listingFile << "RPAREN" << std::endl;
+                break;
+            case 6:
+                listingFile << "LPAREN" << std::endl;
                 break;
 
         }
@@ -41,6 +49,22 @@ void Compiler::parser(){
     } while (token.first != S_END_OF_FILE);
 }
 
+void Compiler::expr(){
+    if (token.second != NKID || token.second != VAL || token.second != LPAREN){
+        processError();
+    }
+}
+
+void Compiler::oper(){
+}
+
+void Compiler::ret(){
+}
+
+void Compiler::error(){
+}
+
+//-------------- TOKENIZER ----------------//
 char Compiler::nextChar(){
     if (static_cast<int>(sourceFile.peek()) == -1){
         ch = END_OF_FILE;
@@ -83,6 +107,7 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
     return token;
 }
 
+//--------------- HELPER FUNCS ---------------//
 bool Compiler::isDelimiter(char x){
     if (isWhitespace(x) || isEOF(x) || (std::find(delimiters.begin(), delimiters.end(), x) != delimiters.end())){
         return true;
@@ -117,4 +142,9 @@ bool Compiler::isEOF(char x){
         return true;
     }
     return false;
+}
+
+void Compiler::processError(std::string err){
+    listingFile << err;
+    exit(8);
 }
