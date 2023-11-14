@@ -1,12 +1,14 @@
 #!/bin/bash
 
-make  clean
-make
+ls | grep -q 'compiler'
+if [ $? -eq 1 ] ; then
+    make
+fi
 
 if [ $# -ne 1 ]; then
-    ./compiler source/test.py listing/test.lst object/test.obj
-    cat listing/test.lst
+    ./compiler testfiles/test.py testlist/test.lst
+    cat testlist/test.lst
 else
-    ./compiler source/$1.py listing/$1.lst object/$1.obj
-    cat listing/$1.lst
+    ./compiler testfiles/$1.py testlist/$1.lst
+    cat testlist/$1.lst
 fi

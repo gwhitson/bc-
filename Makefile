@@ -1,3 +1,4 @@
+WDIR = ~/git/bc++/
 FILE = compiler
 
 # Compiler to use
@@ -5,27 +6,19 @@ CC = g++
 # Compiler flags
 CFLAGS = -g -Wall
 
-INCLUDE_DIRS = -I~/bc++
+INCLUDE_DIRS = -I$(WDIR)$(FILE)
 
-SRCDIR = ./src/
-LSTDIR = ./lst/
-OBJDIR = ./obj/
-TMPDIR = ./.tmp/
+SRCDIR = src/
+OBJDIR = obj/
 
-#%.cpp:
-#	$(CC) $(CFLAGS) -c $< $(INCLUDE_DIRS)
+$(FILE): $(OBJDIR)$(FILE)main.o $(OBJDIR)$(FILE).o 
+	$(CC) $(CFLAGS) -o $@ $^ $(INCLUDE_DIRS)
 
-#%.h:
-#	$(CC) $(CFLAGS) -c $< $(INCLUDE_DIRS)
+$(OBJDIR)$(FILE).o: $(SRCDIR)$(FILE).cpp
+	$(CC) $(CFLAGS) -c $< $(INCLUDE_DIRS) -o $@
 
-$(FILE).o: $(FILE).cpp
-	$(CC) -c $(CFLAGS) $<
-
-$(FILE)main.o: $(FILE)main.C
-	$(CC) -c $(CFLAGS) $<
-
-$(FILE): $@main.o $@.o 
-	$(CC) -o $@ $< $@.o $(INCLUDE_DIRS)
+$(OBJDIR)$(FILE)main.o: $(SRCDIR)$(FILE)main.C
+	$(CC) $(CFLAGS) -c $< $(INCLUDE_DIRS) -o $@
 
 clean:
-	rm -f *.o
+	rm -f obj/* $(FILE)
