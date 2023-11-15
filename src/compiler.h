@@ -96,7 +96,8 @@ class Compiler {
         void oper();
         void ret();
         void error();
-
+        void startParen();
+        void endParen();
         
         char nextChar();
         std::pair<std::string, tokenTypes> nextToken();
@@ -117,7 +118,7 @@ class Compiler {
         uint errorCount = 0;
         uint lineNo = 0;
         std::array<char,5> delimiters = {'(',')', ':', ';', ','};
-        std::array<std::string, 13> keywords = {"+","-","/","*","=","//","**",";","\"",",", ":","(",")"};
+        std::array<std::string, 13> keywords = {"+","-","/","*","=","//","**",";","\"",",", ":"};
 
 };
 

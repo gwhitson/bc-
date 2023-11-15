@@ -57,44 +57,20 @@ void Compiler::parser(){
     //} while (token.first != S_END_OF_FILE);
 }
 
-void printToken(std::ifstream listingFile, std::pair<std::string, tokenTypes>token ){
-    listingFile << token.first << "-";
-    switch (token.second) {
-        case 0:
-            listingFile << "NKID" << std::endl;
-            break;
-        case 1:
-            listingFile << "WHITESPACE" << std::endl;
-            break;
-        case 2:
-            listingFile << "END" << std::endl;
-            break;
-        case 3:
-            listingFile << "KEYWORD" << std::endl;
-            break;
-        case 4:
-            listingFile << "VAL" << std::endl;
-            break;
-        case 5:
-            listingFile << "RPAREN" << std::endl;
-            break;
-        case 6:
-            listingFile << "LPAREN" << std::endl;
-            break;
-}
-
 void Compiler::expr(){
-    if (token.second != NKID && token.second != VAL && token.second != LPAREN){
-        processError("ERROR: Unexpected token -- expr\n");
-    } else {
-        //std::cout << "entering expression" << std::endl;
+    if (token.second == NKID || token.second == VAL || token.second == LPAREN){
+        listingFile << "entering expression" << std::endl;
         nextToken();
         listingFile << token.first << "-" << token.second << std::endl;
         if (token.second == KEYWORD){
             oper();
         } else if (token.second == END){
             ret();
+        } else if (token.second == RPAREN){
+            endParen();
         }
+    } else {
+        processError("ERROR: Unexpected token -- expr\n");
     }
 }
 
@@ -103,13 +79,44 @@ void Compiler::oper(){
         processError("ERROR: Unexpected token");
     } else {
         nextToken();
+        listingFile << token.first << "-" << token.second << std::endl;
+        if (token.second == END){
+            ret();
+        } else if (token.second == NKID || token.second == VAL || token.second == LPAREN){
+            expr();
+        }
     }
 }
 
 void Compiler::ret(){
+    if (token.second != END){
+        processError("ERROR: Unexpected token");
+    } else {
+        listingFile << END_OF_FILE;
+    }
 }
 
 void Compiler::error(){
+}
+
+void Compiler::startParen(){
+    if (token.second != LPAREN){
+        processError("ERROR: Program entered 'Compiler::startParen() without LPAREN token");
+    } else {
+        nextToken();
+        listingFile << token.first << "-" << token.second << std::endl;
+        expr();
+    }
+}
+
+void Compiler::endParen(){
+    if (token.second != RPAREN){
+        processError("ERROR: Program entered 'Compiler::endParen() without RPAREN token");
+    } else {
+        nextToken();
+        listingFile << token.first << "-" << token.second << std::endl;
+        expr();
+    }
 }
 
 //-------------- TOKENIZER ----------------//
@@ -148,6 +155,8 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             }
             if (isKeyword(token.first)) {
                 token.second = KEYWORD;
+            } else if (token.first == "("){
+                token.second = LPAREN;
             } else {
                 token.second = NKID;
             }
