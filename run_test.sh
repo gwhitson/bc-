@@ -1,9 +1,12 @@
 #!/bin/bash
 
-ls | grep -q 'compiler'
-if [ $? -eq 1 ] ; then
-    make
-fi
+make clean
+make
+
+#ls | grep -q 'compiler'
+#if [ $? -eq 1 ] ; then
+#    make
+#fi
 
 if [ $# -ne 1 ]; then
     ./compiler testfiles/test.py testlist/test.lst

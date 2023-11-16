@@ -45,7 +45,7 @@ void Compiler::parser(){
                 break;
             case 5:
                 listingFile << "RPAREN" << std::endl;
-                processError("ERROR: Invalid closing parenthesis ')'");
+                processError("Invalid closing parenthesis ')'");
                 break;
             case 6:
                 listingFile << "LPAREN" << std::endl;
@@ -58,8 +58,8 @@ void Compiler::parser(){
 }
 
 void Compiler::expr(){
-    if (token.second == NKID || token.second == VAL || token.second == LPAREN){
-        listingFile << "entering expression" << std::endl;
+    if (token.second == NKID || token.second == VAL){
+        listingFile << "entering expression - " << token.first << std::endl;
         nextToken();
         listingFile << token.first << "-" << token.second << std::endl;
         if (token.second == KEYWORD){
@@ -68,7 +68,11 @@ void Compiler::expr(){
             ret();
         } else if (token.second == RPAREN){
             endParen();
+        } else {
+            processError("ERROR: Unexpected token -- expr\n");
         }
+    } else if (token.second == LPAREN){
+        startParen();
     } else {
         processError("ERROR: Unexpected token -- expr\n");
     }
@@ -79,6 +83,7 @@ void Compiler::oper(){
         processError("ERROR: Unexpected token");
     } else {
         nextToken();
+        listingFile << "entering operation" << std::endl;
         listingFile << token.first << "-" << token.second << std::endl;
         if (token.second == END){
             ret();
@@ -105,6 +110,7 @@ void Compiler::startParen(){
     } else {
         nextToken();
         listingFile << token.first << "-" << token.second << std::endl;
+        listingFile << "entering paren" << std::endl;
         expr();
     }
 }
@@ -113,6 +119,7 @@ void Compiler::endParen(){
     if (token.second != RPAREN){
         processError("ERROR: Program entered 'Compiler::endParen() without RPAREN token");
     } else {
+        std::cout << "end paren - " << token.first << std::endl;
         nextToken();
         listingFile << token.first << "-" << token.second << std::endl;
         expr();
@@ -126,8 +133,12 @@ char Compiler::nextChar(){
     }else{
         ch = sourceFile.get();
     }
-    //std::cout << ch << std::endl;
+    std::cout << "c-" << ch << std::endl;
     return ch;
+}
+
+char Compiler::peekNextChar(){
+    return sourceFile.peek();
 }
 
 std::pair<std::string, tokenTypes> Compiler::nextToken(){
@@ -137,31 +148,47 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
         if (ch == END_OF_FILE){
             token.first = S_END_OF_FILE;
             token.second = END;
+        } else if (isWhitespace(ch)){
+            nextChar();
+        } else if (ch == '('){
+        } else if (ch == ')'){
+        } else if (isDelimiter(ch)){
+        } else {
+            // build NKID
+        }
+    }
+        /*if (ch == END_OF_FILE){
+            token.first = S_END_OF_FILE;
+            token.second = END;
         } else if (isWhitespace(ch)) {
             while (isWhitespace(ch)) {
                 token.first += ch;
-                ch = nextChar();
+                nextChar();
             }
             token.second = WHITESPACE;
         } else {
             if (isDelimiter(ch)){
                 token.first += ch;
-                ch = nextChar();
+                //nextChar();
             } else {
-                do {
+                while (!isDelimiter(ch)){
                     token.first += ch;
-                    ch = nextChar();
-                } while (!isDelimiter(ch));
+                    nextChar();
+                };
+                //token.first += ch;
             }
             if (isKeyword(token.first)) {
                 token.second = KEYWORD;
+            } else if (token.first == ")"){
+                token.second = RPAREN;
             } else if (token.first == "("){
                 token.second = LPAREN;
             } else {
                 token.second = NKID;
             }
         }
-    }
+        */
+    std::cout << " -" << token.first << std::endl;
     return token;
 }
 
@@ -203,6 +230,6 @@ bool Compiler::isEOF(char x){
 }
 
 void Compiler::processError(std::string err){
-    std::cout << err;
+    listingFile << "ERROR: " << err;
     exit(8);
 }
