@@ -1,8 +1,46 @@
 // starting to build a compiler, we will see how far I take this
 
 #include "compiler.h"
+#include <cctype>
 #include <cstdlib>
 #include <fstream>
+
+void Compiler::printToken(){
+    listingFile << token.first << "-";
+    switch (token.second) {
+        case 0:
+            listingFile << "NKID" << std::endl;
+            expr();
+            break;
+        case 1:
+            listingFile << "WHITESPACE" << std::endl;
+            break;
+        case 2:
+            listingFile << "END" << std::endl;
+            ret();
+            break;
+        case 3:
+            listingFile << "KEYWORD" << std::endl;
+            oper();
+            break;
+        case 4:
+            listingFile << "VAL" << std::endl;
+            expr();
+            break;
+        case 5:
+            listingFile << "RPAREN" << std::endl;
+            processError("Invalid closing parenthesis ')'");
+            break;
+        case 6:
+            listingFile << "LPAREN" << std::endl;
+            expr();
+            break;
+        case 7:
+            listingFile << "DELIM" << std::endl;
+            expr();
+            break;
+    }
+}
 
 //Constructor
 Compiler::Compiler(char **argv){
@@ -19,49 +57,48 @@ Compiler::~Compiler(){
 //------------- PRODUCTIONS --------------//
 void Compiler::parser(){
     lineNo++;
-    //nextChar();
+    nextChar();
     nextToken();
-    //do {
-        listingFile << token.first << "-";
-        switch (token.second) {
-            case 0:
-                listingFile << "NKID" << std::endl;
-                expr();
-                break;
-            case 1:
-                listingFile << "WHITESPACE" << std::endl;
-                break;
-            case 2:
-                listingFile << "END" << std::endl;
-                ret();
-                break;
-            case 3:
-                listingFile << "KEYWORD" << std::endl;
-                oper();
-                break;
-            case 4:
-                listingFile << "VAL" << std::endl;
-                expr();
-                break;
-            case 5:
-                listingFile << "RPAREN" << std::endl;
-                processError("Invalid closing parenthesis ')'");
-                break;
-            case 6:
-                listingFile << "LPAREN" << std::endl;
-                expr();
-                break;
-
-        }
-    //    nextToken();
-    //} while (token.first != S_END_OF_FILE);
+    switch (token.second) {
+        case 0:
+            //listingFile << "NKID" << std::endl;
+            expr();
+            break;
+        case 1:
+            //listingFile << "WHITESPACE" << std::endl;
+            break;
+        case 2:
+            //listingFile << "END" << std::endl;
+            ret();
+            break;
+        case 3:
+            //listingFile << "KEYWORD" << std::endl;
+            oper();
+            break;
+        case 4:
+            //listingFile << "VAL" << std::endl;
+            expr();
+            break;
+        case 5:
+            //listingFile << "RPAREN" << std::endl;
+            processError("Invalid closing parenthesis ')'");
+            break;
+        case 6:
+            //listingFile << "LPAREN" << std::endl;
+            expr();
+            break;
+        case 7:
+            //listingFile << "DELIM" << std::endl;
+            expr();
+            break;
+    }
 }
 
 void Compiler::expr(){
     if (token.second == NKID || token.second == VAL){
         listingFile << "entering expression - " << token.first << std::endl;
         nextToken();
-        listingFile << token.first << "-" << token.second << std::endl;
+        printToken();
         if (token.second == KEYWORD){
             oper();
         } else if (token.second == END){
@@ -84,7 +121,7 @@ void Compiler::oper(){
     } else {
         nextToken();
         listingFile << "entering operation" << std::endl;
-        listingFile << token.first << "-" << token.second << std::endl;
+        printToken();
         if (token.second == END){
             ret();
         } else if (token.second == NKID || token.second == VAL || token.second == LPAREN){
@@ -109,7 +146,7 @@ void Compiler::startParen(){
         processError("ERROR: Program entered 'Compiler::startParen() without LPAREN token");
     } else {
         nextToken();
-        listingFile << token.first << "-" << token.second << std::endl;
+        printToken();
         listingFile << "entering paren" << std::endl;
         expr();
     }
@@ -121,7 +158,7 @@ void Compiler::endParen(){
     } else {
         std::cout << "end paren - " << token.first << std::endl;
         nextToken();
-        listingFile << token.first << "-" << token.second << std::endl;
+        printToken();
         expr();
     }
 }
@@ -143,20 +180,40 @@ char Compiler::peekNextChar(){
 
 std::pair<std::string, tokenTypes> Compiler::nextToken(){
     token.first = "";
-    nextChar();
+    //nextChar();
     while (token.first == ""){
         if (ch == END_OF_FILE){
             token.first = S_END_OF_FILE;
             token.second = END;
         } else if (isWhitespace(ch)){
-            nextChar();
+            while(isWhitespace(ch)){
+                token.first += ch;
+                nextChar();
+            }
+            token.second = WHITESPACE;
         } else if (ch == '('){
+            token.first += ch;
+            nextChar();
+            token.second = LPAREN;
         } else if (ch == ')'){
+            token.first += ch;
+            nextChar();
+            token.second = RPAREN;
         } else if (isDelimiter(ch)){
+            token.first += ch;
+            nextChar();
+            token.second = DELIM;
         } else {
             // build NKID
+            while (!isSpecialChar(ch)){
+                token.first += ch;
+                nextChar();
+            }
+            token.second = NKID;
         }
     }
+    std::cout << " -" << token.first << std::endl;
+    return token;
         /*if (ch == END_OF_FILE){
             token.first = S_END_OF_FILE;
             token.second = END;
@@ -188,8 +245,6 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             }
         }
         */
-    std::cout << " -" << token.first << std::endl;
-    return token;
 }
 
 //--------------- HELPER FUNCS ---------------//
@@ -201,14 +256,23 @@ bool Compiler::isDelimiter(char x){
 }
 
 
-//bool Compiler::isSpecialChar(std::string x){
-//    if (std::find(specialChars.begin(), specialChars.end(), x) != specialChars.end()){
+bool Compiler::isSpecialChar(char x){
+    if (std::find(delimiters.begin(), delimiters.end(), x) != delimiters.end()){
+        return true;
+    } else if (std::find(keywords.begin(), keywords.end(), x) != keywords.end()){
+        return true;
+    }
+    return false;
+}
+
+//bool Compiler::isKeyword(std::string x){
+//    if (std::find(keywords.begin(), keywords.end(), x) != keywords.end()){
 //        return true;
 //    }
 //    return false;
 //}
 
-bool Compiler::isKeyword(std::string x){
+bool Compiler::isKeyword(char x){
     if (std::find(keywords.begin(), keywords.end(), x) != keywords.end()){
         return true;
     }

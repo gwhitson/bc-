@@ -15,7 +15,7 @@ const std::string S_END_OF_FILE = "$";
 enum storeTypes {INTEGER, BOOLEAN, PROG_NAME, CHAR};
 enum modes {VARIABLE, CONSTANT};
 enum allocation {YES, NO};
-enum tokenTypes {NKID, WHITESPACE, END, KEYWORD, VAL, RPAREN, LPAREN};
+enum tokenTypes {NKID, WHITESPACE, END, KEYWORD, VAL, RPAREN, LPAREN, DELIM};
 
 class SymbolTableEntry{
     public:
@@ -102,11 +102,13 @@ class Compiler {
         char peekNextChar();
         char nextChar();
         std::pair<std::string, tokenTypes> nextToken();
+        void printToken();
 
         bool isWhitespace(char x);
         bool isDelimiter(char x);
-        bool isKeyword(std::string x);
-        //bool isSpecialChar(std::string x);
+        //bool isKeyword(std::string x);
+        bool isKeyword(char x);
+        bool isSpecialChar(char x);
         bool isEOF(std::string x);
         bool isEOF(char x);
         void processError(std::string err);
@@ -118,8 +120,8 @@ class Compiler {
         char ch;
         uint errorCount = 0;
         uint lineNo = 0;
-        std::array<char,6> delimiters = {'(',')', ':', ';', ' ', ','};
-        std::array<std::string, 13> keywords = {"+","-","/","*","=","//","**",";","\"",",", ":"};
+        std::array<char, 6> delimiters = {'(',')', ':', ';', ' ', ','};
+        std::array<char, 9> keywords = {'+', '-', '/', '*', '=', '^', ';', ',', ':'};
 
 };
 
