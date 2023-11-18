@@ -1,1 +1,18 @@
+8-NKID
 entering expression - 8
++-KEYWORD
+entering operation - +
+13-NKID
+entering expression - 13
+/-KEYWORD
+entering operation - /
+(-LPAREN
+entering expression - (
+entering paren
+a-NKID
+entering expression - a
+/-KEYWORD
+entering operation - /
+5-NKID
+entering expression - 5
+)-RPAREN

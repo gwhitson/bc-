@@ -60,43 +60,35 @@ void Compiler::parser(){
     nextChar();
     nextToken();
     switch (token.second) {
-        case 0:
-            //listingFile << "NKID" << std::endl;
+        case 0: // NKID
             expr();
             break;
-        case 1:
-            //listingFile << "WHITESPACE" << std::endl;
+        case 1: // WHITESPACE
             break;
-        case 2:
-            //listingFile << "END" << std::endl;
+        case 2: // END
             ret();
             break;
-        case 3:
-            //listingFile << "KEYWORD" << std::endl;
+        case 3: // KEYWORD
             oper();
             break;
-        case 4:
-            //listingFile << "VAL" << std::endl;
+        case 4: // VAL
             expr();
             break;
-        case 5:
-            //listingFile << "RPAREN" << std::endl;
+        case 5: // RPAREN
             processError("Invalid closing parenthesis ')'");
             break;
-        case 6:
-            //listingFile << "LPAREN" << std::endl;
+        case 6: // LPAREN
             expr();
             break;
-        case 7:
-            //listingFile << "DELIM" << std::endl;
+        case 7: // DELIM
             expr();
             break;
     }
 }
 
 void Compiler::expr(){
+    listingFile << "entering expression - " << token.first << std::endl;
     if (token.second == NKID || token.second == VAL){
-        listingFile << "entering expression - " << token.first << std::endl;
         nextToken();
         printToken();
         if (token.second == KEYWORD){
@@ -116,16 +108,20 @@ void Compiler::expr(){
 }
 
 void Compiler::oper(){
+    listingFile << "entering operation - " << token.first << std::endl;
     if (token.second != KEYWORD){
         processError("ERROR: Unexpected token");
     } else {
         nextToken();
-        listingFile << "entering operation" << std::endl;
         printToken();
         if (token.second == END){
             ret();
-        } else if (token.second == NKID || token.second == VAL || token.second == LPAREN){
+        } else if (token.second == LPAREN){
+            startParen();
+        } else if (token.second == NKID || token.second == VAL){
             expr();
+        } else {
+            processError("ERROR: Unexpected token -- oper");
         }
     }
 }
@@ -142,12 +138,12 @@ void Compiler::error(){
 }
 
 void Compiler::startParen(){
+    listingFile << "entering paren" << std::endl;
     if (token.second != LPAREN){
         processError("ERROR: Program entered 'Compiler::startParen() without LPAREN token");
     } else {
         nextToken();
         printToken();
-        listingFile << "entering paren" << std::endl;
         expr();
     }
 }
@@ -156,7 +152,7 @@ void Compiler::endParen(){
     if (token.second != RPAREN){
         processError("ERROR: Program entered 'Compiler::endParen() without RPAREN token");
     } else {
-        std::cout << "end paren - " << token.first << std::endl;
+        //std::cout << "end paren - " << token.first << std::endl;
         nextToken();
         printToken();
         expr();
@@ -170,7 +166,8 @@ char Compiler::nextChar(){
     }else{
         ch = sourceFile.get();
     }
-    std::cout << "c-" << ch << std::endl;
+    //std::cout << "c-" << ch << std::endl;
+    //std::cout << "t-" << token.first << std::endl;
     return ch;
 }
 
@@ -203,48 +200,25 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             token.first += ch;
             nextChar();
             token.second = DELIM;
+        }else if (isKeyword(ch)){
+            token.first += ch;
+            token.second = KEYWORD;
+            nextChar();
         } else {
-            // build NKID
-            while (!isSpecialChar(ch)){
+            //std::cout << "building NKID" << std::endl;
+            do {
                 token.first += ch;
                 nextChar();
-            }
-            token.second = NKID;
-        }
-    }
-    std::cout << " -" << token.first << std::endl;
-    return token;
-        /*if (ch == END_OF_FILE){
-            token.first = S_END_OF_FILE;
-            token.second = END;
-        } else if (isWhitespace(ch)) {
-            while (isWhitespace(ch)) {
-                token.first += ch;
-                nextChar();
-            }
-            token.second = WHITESPACE;
-        } else {
-            if (isDelimiter(ch)){
-                token.first += ch;
-                //nextChar();
-            } else {
-                while (!isDelimiter(ch)){
-                    token.first += ch;
-                    nextChar();
-                };
-                //token.first += ch;
-            }
-            if (isKeyword(token.first)) {
+            } while (!isSpecialChar(ch) && ch != END_OF_FILE);
+            if (token.first.length() == 1 && (std::find(keywords.begin(), keywords.end(),token.first[0]) != keywords.end())){
                 token.second = KEYWORD;
-            } else if (token.first == ")"){
-                token.second = RPAREN;
-            } else if (token.first == "("){
-                token.second = LPAREN;
-            } else {
+            } else{
                 token.second = NKID;
             }
         }
-        */
+    }
+    printToken();
+    return token;
 }
 
 //--------------- HELPER FUNCS ---------------//

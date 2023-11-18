@@ -9,9 +9,9 @@ make
 #fi
 
 if [ $# -ne 1 ]; then
-    ./compiler testfiles/test.py testlist/test.lst
-    cat testlist/test.lst
+    ./compiler tst/test.py lst/test.lst
+    cat lst/test.lst
 else
-    ./compiler testfiles/$1.py testlist/$1.lst
-    cat testlist/$1.lst
+    ./compiler tst/$1.py lst/$1.lst
+    cat lst/$1.lst
 fi

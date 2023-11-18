@@ -120,8 +120,8 @@ class Compiler {
         char ch;
         uint errorCount = 0;
         uint lineNo = 0;
-        std::array<char, 6> delimiters = {'(',')', ':', ';', ' ', ','};
-        std::array<char, 9> keywords = {'+', '-', '/', '*', '=', '^', ';', ',', ':'};
+        std::array<char, 7> delimiters = {'(',')', ':', ';', ' ', ',', '\n'};
+        std::array<char, 10> keywords = {'+', '-', '/', '*', '=', '^', ';', ',', ':', '$'};
 
 };
 
