@@ -1,13 +1,5 @@
 #include "compiler.h"
 
-extern "C" int test(int64_t x);
-asm(R"(
-.globl test
-    test:
-    mov %rdi,%rax
-    ret
-)");
-
 int main(int argc, char **argv)
 {
     // This program is the stage1 compiler for Pascallite.  It will accept
@@ -24,9 +16,6 @@ int main(int argc, char **argv)
     Compiler myCompiler(argv);
 
     myCompiler.parser();
-
-    int64_t temp = test(5);
-    std::cout << "--"<<temp << std::endl;
 
     return 0;
 }

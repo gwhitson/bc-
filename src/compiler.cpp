@@ -10,34 +10,27 @@ void Compiler::printToken(){
     switch (token.second) {
         case 0:
             listingFile << "NKID" << std::endl;
-            expr();
             break;
         case 1:
             listingFile << "WHITESPACE" << std::endl;
             break;
         case 2:
             listingFile << "END" << std::endl;
-            ret();
             break;
         case 3:
             listingFile << "KEYWORD" << std::endl;
-            oper();
             break;
         case 4:
             listingFile << "VAL" << std::endl;
-            expr();
             break;
         case 5:
             listingFile << "RPAREN" << std::endl;
-            processError("Invalid closing parenthesis ')'");
             break;
         case 6:
             listingFile << "LPAREN" << std::endl;
-            expr();
             break;
         case 7:
             listingFile << "DELIM" << std::endl;
-            expr();
             break;
     }
 }
@@ -91,17 +84,21 @@ void Compiler::expr(){
     if (token.second == NKID || token.second == VAL){
         nextToken();
         printToken();
-        if (token.second == KEYWORD){
-            oper();
-        } else if (token.second == END){
-            ret();
-        } else if (token.second == RPAREN){
-            endParen();
-        } else {
-            processError("ERROR: Unexpected token -- expr\n");
-        }
+    } else {
+        processError("ERROR: Unexpected token -- expr\n");
+    }
+
+    if (token.second == KEYWORD){
+        oper();
+    } else if (token.second == RPAREN){
+        endParen();
+    } else if (token.second == END){
+        ret();
     } else if (token.second == LPAREN){
         startParen();
+    } else if (token.second == WHITESPACE){
+        nextToken();
+        expr();
     } else {
         processError("ERROR: Unexpected token -- expr\n");
     }
@@ -120,6 +117,9 @@ void Compiler::oper(){
             startParen();
         } else if (token.second == NKID || token.second == VAL){
             expr();
+        } else if (token.second == WHITESPACE){
+            nextToken();
+            oper();
         } else {
             processError("ERROR: Unexpected token -- oper");
         }
@@ -130,7 +130,7 @@ void Compiler::ret(){
     if (token.second != END){
         processError("ERROR: Unexpected token");
     } else {
-        listingFile << END_OF_FILE;
+        listingFile << "entering return" << std::endl;
     }
 }
 
@@ -152,7 +152,7 @@ void Compiler::endParen(){
     if (token.second != RPAREN){
         processError("ERROR: Program entered 'Compiler::endParen() without RPAREN token");
     } else {
-        //std::cout << "end paren - " << token.first << std::endl;
+        listingFile << "end paren - " << token.first << std::endl;
         nextToken();
         printToken();
         expr();
@@ -161,26 +161,31 @@ void Compiler::endParen(){
 
 //-------------- TOKENIZER ----------------//
 char Compiler::nextChar(){
-    if (static_cast<int>(sourceFile.peek()) == -1){
+  //if (static_cast<int>(sourceFile.peek()) <= -1){
+  //    ch = END_OF_FILE;
+  //}else{
+  //    ch = sourceFile.get();
+  //}
+  ////std::cout << "t-" << token.first << std::endl;
+  //return ch;
+    ch = sourceFile.get();
+    if (sourceFile.eof()){
         ch = END_OF_FILE;
-    }else{
-        ch = sourceFile.get();
     }
-    //std::cout << "c-" << ch << std::endl;
-    //std::cout << "t-" << token.first << std::endl;
+    listingFile << "c-" << ch << std::endl;
     return ch;
 }
 
-char Compiler::peekNextChar(){
-    return sourceFile.peek();
-}
+//char Compiler::peekNextChar(){
+//    return sourceFile.peek();
+//}
 
 std::pair<std::string, tokenTypes> Compiler::nextToken(){
     token.first = "";
     //nextChar();
     while (token.first == ""){
         if (ch == END_OF_FILE){
-            token.first = S_END_OF_FILE;
+            token.first = ch;
             token.second = END;
         } else if (isWhitespace(ch)){
             while(isWhitespace(ch)){
@@ -212,12 +217,12 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             } while (!isSpecialChar(ch) && ch != END_OF_FILE);
             if (token.first.length() == 1 && (std::find(keywords.begin(), keywords.end(),token.first[0]) != keywords.end())){
                 token.second = KEYWORD;
-            } else{
+            } else {
                 token.second = NKID;
             }
         }
     }
-    printToken();
+    //printToken();
     return token;
 }
 

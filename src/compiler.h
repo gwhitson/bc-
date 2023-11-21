@@ -99,7 +99,7 @@ class Compiler {
         void startParen();
         void endParen();
         
-        char peekNextChar();
+        //char peekNextChar();
         char nextChar();
         std::pair<std::string, tokenTypes> nextToken();
         void printToken();
