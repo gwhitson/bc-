@@ -6,7 +6,11 @@
 #include <fstream>
 
 void Compiler::printToken(){
-    listingFile << token.first << "-";
+    if (token.first == "\n"){
+        listingFile << "\\n" << "-";
+    } else {
+        listingFile << token.first << "-";
+    }
     switch (token.second) {
         case 0:
             listingFile << "NKID" << std::endl;
@@ -172,7 +176,7 @@ char Compiler::nextChar(){
     if (sourceFile.eof()){
         ch = END_OF_FILE;
     }
-    if (ch == '\n' || sourceFile.eof()){
+    if (ch == '\n'){
         listingFile << "c- \\n" << std::endl;
     } else {
         listingFile << "c-" << ch << std::endl;

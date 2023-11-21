@@ -26,8 +26,7 @@ entering expression - 5
 c- \n
 )-RPAREN
 end paren - )
-c- \n
-
--WHITESPACE
+c-$
+\n-WHITESPACE
 entering expression - 
 
