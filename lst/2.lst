@@ -23,11 +23,10 @@ entering operation - /
 c-)
 5-NKID
 entering expression - 5
-c-
-
+c- \n
 )-RPAREN
 end paren - )
-c-$
+c- \n
 
 -WHITESPACE
 entering expression - 

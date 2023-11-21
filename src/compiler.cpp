@@ -172,7 +172,11 @@ char Compiler::nextChar(){
     if (sourceFile.eof()){
         ch = END_OF_FILE;
     }
-    listingFile << "c-" << ch << std::endl;
+    if (ch == '\n' || sourceFile.eof()){
+        listingFile << "c- \\n" << std::endl;
+    } else {
+        listingFile << "c-" << ch << std::endl;
+    }
     return ch;
 }
 
