@@ -13,7 +13,7 @@
 const char END_OF_FILE = '$';
 const std::string S_END_OF_FILE = "$";
 
-enum storeTypes {INTEGER, BOOLEAN, PROG_NAME, CHAR};
+enum storeTypes {INTEGER, BOOLEAN, ID};
 enum modes {VARIABLE, CONSTANT};
 enum allocation {YES, NO};
 enum tokenTypes {NKID, WHITESPACE, END, KEYWORD, VAL, RPAREN, LPAREN, DELIM};
@@ -108,6 +108,7 @@ class Compiler {
 
         // helper functions
         void printToken();
+        void stInsert(std::string exName, std::string in, storeTypes st, modes m, std::string v, allocation a, int u);
         bool isWhitespace(char x);
         bool isDelimiter(char x);
         bool isKeyword(char x);

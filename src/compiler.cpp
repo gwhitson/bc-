@@ -87,7 +87,11 @@ void Compiler::expr(){
     listingFile << "entering expression - " << token.first << std::endl;
     if (token.second == NKID || token.second == VAL || token.second == WHITESPACE){
         if (token.second != WHITESPACE){
-            
+            if (token.second == NKID){
+                // temp insert
+                stInsert(token.first, token.first, ID, VARIABLE, 0, YES, 1);
+            } else { // token.second == VAL
+            }
         }
         nextToken();
         printToken();
@@ -225,6 +229,11 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
 }
 
 //--------------- HELPER FUNCS ---------------//
+void Compiler::stInsert(std::string exName, std::string in, storeTypes st, modes m, std::string v, allocation a, int u){
+    SymbolTableEntry entry = SymbolTableEntry(in, st, m, v, a, u);
+    symbolTable.insert(std::pair<std::string, SymbolTableEntry>(exName, entry));
+}
+
 bool Compiler::isDelimiter(char x){
     if (isWhitespace(x) || isEOF(x) || (std::find(delimiters.begin(), delimiters.end(), x) != delimiters.end())){
         return true;
