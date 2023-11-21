@@ -1,2 +1,1 @@
-break Compiler::parser
-break Compiler::expr
+break Compiler::nextToken

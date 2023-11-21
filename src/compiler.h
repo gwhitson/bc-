@@ -2,6 +2,7 @@
 //#ifndef COMPILER_H
 //#define COMPILER_H
 
+#include <map>
 #include <fstream>
 #include <iostream>
 #include <array>
@@ -90,8 +91,10 @@ class Compiler {
         Compiler(char **argv);
         ~Compiler();
 
+        // entry point
         void parser();
 
+        // productions
         void expr();
         void oper();
         void ret();
@@ -99,24 +102,26 @@ class Compiler {
         void startParen();
         void endParen();
         
-        //char peekNextChar();
+        // lexical functions
         char nextChar();
         std::pair<std::string, tokenTypes> nextToken();
-        void printToken();
 
+        // helper functions
+        void printToken();
         bool isWhitespace(char x);
         bool isDelimiter(char x);
-        //bool isKeyword(std::string x);
         bool isKeyword(char x);
         bool isSpecialChar(char x);
         bool isEOF(std::string x);
         bool isEOF(char x);
         void processError(std::string err);
+        //bool isKeyword(std::string x);
     private:
         std::ifstream sourceFile;
         std::ofstream listingFile;
         std::ofstream objectFile;
         std::pair<std::string, tokenTypes> token;
+        std::map<std::string, SymbolTableEntry> symbolTable;
         char ch;
         uint errorCount = 0;
         uint lineNo = 0;

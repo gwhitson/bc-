@@ -85,7 +85,10 @@ void Compiler::parser(){
 
 void Compiler::expr(){
     listingFile << "entering expression - " << token.first << std::endl;
-    if (token.second == NKID || token.second == VAL){
+    if (token.second == NKID || token.second == VAL || token.second == WHITESPACE){
+        if (token.second != WHITESPACE){
+            
+        }
         nextToken();
         printToken();
     } else {
@@ -165,13 +168,6 @@ void Compiler::endParen(){
 
 //-------------- TOKENIZER ----------------//
 char Compiler::nextChar(){
-  //if (static_cast<int>(sourceFile.peek()) <= -1){
-  //    ch = END_OF_FILE;
-  //}else{
-  //    ch = sourceFile.get();
-  //}
-  ////std::cout << "t-" << token.first << std::endl;
-  //return ch;
     ch = sourceFile.get();
     if (sourceFile.eof()){
         ch = END_OF_FILE;
@@ -183,10 +179,6 @@ char Compiler::nextChar(){
     }
     return ch;
 }
-
-//char Compiler::peekNextChar(){
-//    return sourceFile.peek();
-//}
 
 std::pair<std::string, tokenTypes> Compiler::nextToken(){
     token.first = "";
@@ -218,7 +210,6 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             token.second = KEYWORD;
             nextChar();
         } else {
-            //std::cout << "building NKID" << std::endl;
             do {
                 token.first += ch;
                 nextChar();
@@ -230,7 +221,6 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             }
         }
     }
-    //printToken();
     return token;
 }
 
@@ -284,3 +274,4 @@ void Compiler::processError(std::string err){
     listingFile << "ERROR: " << err;
     exit(8);
 }
+
