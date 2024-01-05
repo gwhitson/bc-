@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include <stdio.h>
 
 int main(int argc, char **argv)
 {
@@ -15,7 +16,8 @@ int main(int argc, char **argv)
 
     Compiler myCompiler(argv);
 
-    myCompiler.parser();
+    int val = myCompiler.compiler();
+    printf("%d",val);
 
     return 0;
 }

@@ -2,6 +2,7 @@
 //#ifndef COMPILER_H
 //#define COMPILER_H
 
+#include <deque>
 #include <map>
 #include <fstream>
 #include <iostream>
@@ -92,7 +93,7 @@ class Compiler {
         ~Compiler();
 
         // entry point
-        void parser();
+        int compiler();
 
         // productions
         void expr();
@@ -101,6 +102,9 @@ class Compiler {
         void error();
         void startParen();
         void endParen();
+
+        // code execution
+        void code();
         
         // lexical functions
         char nextChar();
@@ -123,6 +127,8 @@ class Compiler {
         std::ofstream objectFile;
         std::pair<std::string, tokenTypes> token;
         std::map<std::string, SymbolTableEntry> symbolTable;
+        std::deque<std::string> ops;
+        int currentVal = 0;
         char ch;
         uint errorCount = 0;
         uint lineNo = 0;

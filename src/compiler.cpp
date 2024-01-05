@@ -4,9 +4,10 @@
 #include <cctype>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 
 void Compiler::printToken(){
-    if (token.first == "\n"){
+    /*if (token.first == "\n"){
         listingFile << "\\n" << "-";
     } else {
         listingFile << token.first << "-";
@@ -36,7 +37,7 @@ void Compiler::printToken(){
         case 7:
             listingFile << "DELIM" << std::endl;
             break;
-    }
+    }*/
 }
 
 //Constructor
@@ -52,7 +53,7 @@ Compiler::~Compiler(){
 }
 
 //------------- PRODUCTIONS --------------//
-void Compiler::parser(){
+int Compiler::compiler(){
     lineNo++;
     nextChar();
     nextToken();
@@ -81,48 +82,80 @@ void Compiler::parser(){
             expr();
             break;
     }
+    return currentVal;
 }
 
 void Compiler::expr(){
-    listingFile << "entering expression - " << token.first << std::endl;
-    if (token.second == NKID || token.second == VAL || token.second == WHITESPACE){
-        if (token.second != WHITESPACE){
-            if (token.second == NKID){
-                // temp insert
-                stInsert(token.first, token.first, ID, VARIABLE, 0, YES, 1);
-            } else { // token.second == VAL
-            }
-        }
+    while (token.second == WHITESPACE){
         nextToken();
-        printToken();
-    } else {
-        processError("ERROR: Unexpected token -- expr\n");
     }
-
-    if (token.second == KEYWORD){
-        oper();
-    } else if (token.second == RPAREN){
-        endParen();
-    } else if (token.second == END){
-        ret();
-    } else if (token.second == LPAREN){
-        startParen();
-    } else if (token.second == WHITESPACE){
-        nextToken();
-        expr();
-    } else {
-        processError("ERROR: Unexpected token -- expr\n");
+    switch (token.second) {
+        case 0: // NKID
+            stInsert(token.first, token.first, ID, VARIABLE, token.first, YES, 1);
+            nextToken();
+            expr();
+            break;
+        case 1: // WHITESPACE
+            nextToken();
+            break;
+        case 2: // END
+            ret();
+            break;
+        case 3: // KEYWORD
+            oper();
+            break;
+        case 4: // VAL
+            stInsert(token.first, token.first, ID, VARIABLE, token.first, YES, 1);
+            nextToken();
+            expr();
+            break;
+        case 5: // RPAREN
+            endParen();
+            break;
+        case 6: // LPAREN
+            startParen();
+            break;
+        case 7: // DELIM
+            processError("ERROR: Unexpected token -- expr\n");
+            break;
     }
+    //listingFile << "entering expression - " << token.first << std::endl;
+    std::cout << "end expr" << std::endl;
 }
 
 void Compiler::oper(){
-    listingFile << "entering operation - " << token.first << std::endl;
-    if (token.second != KEYWORD){
+    while (token.second == WHITESPACE){
+        nextToken();
+    }
+    switch (token.second) {
+        case 0: // NKID
+            break;
+        case 1: // WHITESPACE
+            break;
+        case 2: // END
+            break;
+        case 3: // KEYWORD
+            break;
+        case 4: // VAL
+            break;
+        case 5: // RPAREN
+            break;
+        case 6: // LPAREN
+            break;
+        case 7: // DELIM
+            break;
+    }
+    std::cout << "end oper" << std::endl;
+    /*
+    //listingFile << "entering operation - " << token.first << std::endl;
+    if (token.second != KEYWORD && token.second != NKID && token.second != WHITESPACE){
         processError("ERROR: Unexpected token");
     } else {
-        nextToken();
-        printToken();
-        if (token.second == END){
+        //nextToken();
+        //printToken();
+        if (token.second == KEYWORD){
+            
+        } else if (token.second == END){
             ret();
         } else if (token.second == LPAREN){
             startParen();
@@ -135,39 +168,113 @@ void Compiler::oper(){
             processError("ERROR: Unexpected token -- oper");
         }
     }
+    std::cout << "end oper" << std::endl;
+    */
 }
 
 void Compiler::ret(){
     if (token.second != END){
         processError("ERROR: Unexpected token");
     } else {
-        listingFile << "entering return" << std::endl;
+        //listingFile << "entering return" << std::endl;
     }
+    std::cout << "end ret" << std::endl;
 }
 
 void Compiler::error(){
 }
 
 void Compiler::startParen(){
-    listingFile << "entering paren" << std::endl;
+    while (token.second == WHITESPACE){
+        nextToken();
+    }
+    switch (token.second) {
+        case 0: // NKID
+            break;
+        case 1: // WHITESPACE
+            break;
+        case 2: // END
+            break;
+        case 3: // KEYWORD
+            break;
+        case 4: // VAL
+            break;
+        case 5: // RPAREN
+            break;
+        case 6: // LPAREN
+            break;
+        case 7: // DELIM
+            break;
+    }
+    std::cout << "end oper" << std::endl;
+    //listingFile << "entering paren" << std::endl;
     if (token.second != LPAREN){
         processError("ERROR: Program entered 'Compiler::startParen() without LPAREN token");
     } else {
         nextToken();
-        printToken();
+        //printToken();
         expr();
     }
 }
 
 void Compiler::endParen(){
+    while (token.second == WHITESPACE){
+        nextToken();
+    }
+    switch (token.second) {
+        case 0: // NKID
+            break;
+        case 1: // WHITESPACE
+            break;
+        case 2: // END
+            break;
+        case 3: // KEYWORD
+            break;
+        case 4: // VAL
+            break;
+        case 5: // RPAREN
+            break;
+        case 6: // LPAREN
+            break;
+        case 7: // DELIM
+            break;
+    }
+    std::cout << "end oper" << std::endl;
     if (token.second != RPAREN){
         processError("ERROR: Program entered 'Compiler::endParen() without RPAREN token");
     } else {
-        listingFile << "end paren - " << token.first << std::endl;
+        //listingFile << "end paren - " << token.first << std::endl;
         nextToken();
-        printToken();
+        //printToken();
         expr();
     }
+}
+
+//-------------- CODE EXEC ----------------//
+void Compiler::code(){
+    while (token.second == WHITESPACE){
+        nextToken();
+    }
+    switch (token.second) {
+        case 0: // NKID
+            break;
+        case 1: // WHITESPACE
+            break;
+        case 2: // END
+            break;
+        case 3: // KEYWORD
+            break;
+        case 4: // VAL
+            break;
+        case 5: // RPAREN
+            break;
+        case 6: // LPAREN
+            break;
+        case 7: // DELIM
+            break;
+    }
+    std::cout << "end oper" << std::endl;
+    
 }
 
 //-------------- TOKENIZER ----------------//
@@ -176,11 +283,11 @@ char Compiler::nextChar(){
     if (sourceFile.eof()){
         ch = END_OF_FILE;
     }
-    if (ch == '\n'){
+    /*if (ch == '\n'){
         listingFile << "c- \\n" << std::endl;
     } else {
         listingFile << "c-" << ch << std::endl;
-    }
+    }*/
     return ch;
 }
 
@@ -188,7 +295,7 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
     token.first = "";
     //nextChar();
     while (token.first == ""){
-        if (ch == END_OF_FILE){
+        if (ch == END_OF_FILE || ch == '\n'){
             token.first = ch;
             token.second = END;
         } else if (isWhitespace(ch)){
@@ -230,7 +337,7 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
 
 //--------------- HELPER FUNCS ---------------//
 void Compiler::stInsert(std::string exName, std::string in, storeTypes st, modes m, std::string v, allocation a, int u){
-    SymbolTableEntry entry = SymbolTableEntry(in, st, m, v, a, u);
+    SymbolTableEntry entry(in, st, m, v, a, u);
     symbolTable.insert(std::pair<std::string, SymbolTableEntry>(exName, entry));
 }
 
