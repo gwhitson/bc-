@@ -82,6 +82,7 @@ int Compiler::compiler(){
             expr();
             break;
     }
+    std::cout << token.first << '-' << token.second << std::endl;
     return currentVal;
 }
 
@@ -129,20 +130,28 @@ void Compiler::oper(){
     }
     switch (token.second) {
         case 0: // NKID
+            expr();
             break;
         case 1: // WHITESPACE
+            processError("ERROR: Unexpected token -- oper\n");
             break;
         case 2: // END
+            ret();
             break;
         case 3: // KEYWORD
+            processError("ERROR: Unexpected token -- oper\n");
             break;
         case 4: // VAL
+            expr();
             break;
         case 5: // RPAREN
+            processError("ERROR: Unexpected token -- oper\n");
             break;
         case 6: // LPAREN
+            processError("ERROR: Unexpected token -- oper\n");
             break;
         case 7: // DELIM
+            startParen();
             break;
     }
     std::cout << "end oper" << std::endl;
@@ -156,11 +165,8 @@ void Compiler::oper(){
         if (token.second == KEYWORD){
             
         } else if (token.second == END){
-            ret();
         } else if (token.second == LPAREN){
-            startParen();
         } else if (token.second == NKID || token.second == VAL){
-            expr();
         } else if (token.second == WHITESPACE){
             nextToken();
             oper();
@@ -295,6 +301,9 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
     token.first = "";
     //nextChar();
     while (token.first == ""){
+        while (ch == ' '){
+            nextChar();
+        }
         if (ch == END_OF_FILE || ch == '\n'){
             token.first = ch;
             token.second = END;
