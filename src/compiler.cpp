@@ -7,7 +7,7 @@
 #include <iostream>
 
 void Compiler::printToken(){
-    /*if (token.first == "\n"){
+    if (token.first == "\n"){
         listingFile << "\\n" << "-";
     } else {
         listingFile << token.first << "-";
@@ -37,7 +37,7 @@ void Compiler::printToken(){
         case 7:
             listingFile << "DELIM" << std::endl;
             break;
-    }*/
+    }
 }
 
 //Constructor
@@ -57,6 +57,8 @@ int Compiler::compiler(){
     lineNo++;
     nextChar();
     nextToken();
+    //std::cout <<token.first <<std::endl;
+    //std::cout <<token.second <<std::endl;
     switch (token.second) {
         case 0: // NKID
             expr();
@@ -87,6 +89,7 @@ int Compiler::compiler(){
 }
 
 void Compiler::expr(){
+    std::cout<< "expr"<< std::endl;
     while (token.second == WHITESPACE){
         nextToken();
     }
@@ -120,11 +123,14 @@ void Compiler::expr(){
             processError("ERROR: Unexpected token -- expr\n");
             break;
     }
-    //listingFile << "entering expression - " << token.first << std::endl;
+    listingFile << "entering expression - " << token.first << std::endl;
     std::cout << "end expr" << std::endl;
 }
 
 void Compiler::oper(){
+    nextToken();
+    std::cout<<"oper"<<std::endl;
+    std::cout<<token.first<<std::endl;
     while (token.second == WHITESPACE){
         nextToken();
     }
@@ -294,6 +300,7 @@ char Compiler::nextChar(){
     } else {
         listingFile << "c-" << ch << std::endl;
     }*/
+    //std::cout << ch << std::endl;
     return ch;
 }
 
@@ -341,6 +348,7 @@ std::pair<std::string, tokenTypes> Compiler::nextToken(){
             }
         }
     }
+    printToken();
     return token;
 }
 
@@ -396,6 +404,7 @@ bool Compiler::isEOF(char x){
 }
 
 void Compiler::processError(std::string err){
+    std::cout << "ERROR: " << err << std::endl;
     listingFile << "ERROR: " << err;
     exit(8);
 }

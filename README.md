@@ -1,2 +1,3 @@
-# cppLexer
-building a CPP lexer/tokenizer
+# BC++
+
+Building a compiler for bc in c++.
